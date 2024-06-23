@@ -45,7 +45,6 @@ class Operation:
         table_name = self.query[LAST]
         return table_name
 
-
 class Ddl_Operation():
     def __init__(self,query,operation_index,database):
         self.query = query
@@ -146,8 +145,28 @@ class Ddl_Operation():
         tbl = self.query[1]
         table_name = self.query[2]
 
-        table_mata_data = str(self.DATABASE)+'/'+table_name+'.txt'
-        os.remove(table_mata_data)
+        if tbl == 'TABLE' or tbl == 'table':
+            table_mata_data = str(self.DATABASE)+'/'+table_name+'.txt'
+            os.remove(table_mata_data)
+
+        elif tbl == 'DATABASE' or tbl == 'database':
+            try:
+                database_mata_name = str(self.DATABASE)
+                os.rmdir(database_mata_name)
+            except OSError as e:
+                print(f"hey there: {e}")
+
+    def truncate_operation(self):
+
+        self.DATABASE = 'emp'
+        oprt = self.query[0]
+        tbl = self.query[1]
+        table_name = self.query[2]
+
+        with open((table_name), 'w') as file:
+            file.write("")
+
+
 
 
     def perform_operation(self):
@@ -161,12 +180,13 @@ class Ddl_Operation():
         elif self.operation_index == 4:
             self.truncate_operation()
 
+class Dml_Operation():
 
 
 
 DATABASE = select_database()
 
-txt = "ALTER TABLE table_name RENAME TO new_table_name"
+txt = ""
 query = txt.split()
 
 
@@ -176,8 +196,6 @@ operation_name, operation_index ,operation_type = op.first_query()
 table_name = op.last_query()
 
 #print(f"\n operation = {operation_name} \n column names = {operation_type} \n table name = {table_name}")
-
-
 
 
 if operation_type == 'ddl':
