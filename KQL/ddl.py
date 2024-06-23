@@ -82,22 +82,72 @@ class Ddl_Operation():
         table_name = self.query[2]
 
         action = self.query[3]
-
+        table_mata_data = str(self.DATABASE)+'/'+table_name+'.txt'
+       
         #adding a new column
-        if action == 'ADD':
+        if action == "ADD":
             nm =  self.query[4]
             dt = self.query[5]
 
-            table_mata_data = str(DATABASE)+'/'+table_name+'.txt'        
+                    
             with open(str(table_mata_data), mode='a') as file:
                 file.writelines(str(nm+' '+dt))
-        elif action = 'MODIFY':
-                      
+        
+        #Modify an existing column's attribute in a table
+        elif action == 'MODIFY':
+            content = []
+            nm =  self.query[4]
+            dt = self.query[5]
 
+            with open(str(table_mata_data), 'r') as file:
+                content = file.readlines()
 
+            for i,j in enumerate(content):
+                if j.startswith(nm) :
+                    content[i] = nm+' '+dt+'\n'
 
+            #schema = [x for x in content[0]]
 
+            with open((table_mata_data), 'w') as file:
+                for i in content:
+                    file.write(str(i))
 
+        #Rename a column in a table
+        elif action == 'RENAME':
+            content = []
+            nm =  self.query[5]
+            nm2 = self.query[7]
+
+            with open(str(table_mata_data), 'r') as file:
+                content = file.readlines()
+
+            for i,j in enumerate(content):
+                if j.startswith(nm):
+                    data = content[i].split()
+                    content[i] = nm2+' '+data[1]+'\n'
+
+            with open((table_mata_data), 'w') as file:
+                for i in content:
+                    file.write(str(i))
+
+        #Rename a table
+        elif action == "RENAME":
+            content = []
+            nm =  self.query[3]
+            nm2 = self.query[6]
+            table_mata_data = str(DATABASE)+'/'+nm+'.txt'
+            new_table_mata_data = str(DATABASE)+'/'+nm2+'.txt'
+            os.rename(table_mata_data,new_table_mata_data)
+
+    def drop_operation(self):
+        
+        self.DATABASE = 'emp'
+        oprt = self.query[0]
+        tbl = self.query[1]
+        table_name = self.query[2]
+
+        table_mata_data = str(self.DATABASE)+'/'+table_name+'.txt'
+        os.remove(table_mata_data)
 
 
     def perform_operation(self):
@@ -116,7 +166,7 @@ class Ddl_Operation():
 
 DATABASE = select_database()
 
-txt = "ALTER TABLE table_name ADD col4 varchar"
+txt = "ALTER TABLE table_name RENAME TO new_table_name"
 query = txt.split()
 
 
@@ -125,7 +175,7 @@ op = Operation(query)
 operation_name, operation_index ,operation_type = op.first_query()
 table_name = op.last_query()
 
-print(f"\n operation = {operation_name} \n column names = {operation_type} \n table name = {table_name}")
+#print(f"\n operation = {operation_name} \n column names = {operation_type} \n table name = {table_name}")
 
 
 

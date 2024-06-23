@@ -1,5 +1,10 @@
 import os
 
+content = ['col1 int\n', 'col2 varchar\n', 'col3 int\n', 'col4 varchar']
+nm = 'col1'
+for i,j in enumerate(content):
+    if j.startswith(nm) :
+        print("hello")
 # List files and directories in the current directory
 current_directory_contents = os.listdir('.')
 print(current_directory_contents)
