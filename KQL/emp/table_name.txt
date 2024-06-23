@@ -1,0 +1,4 @@
+col1 int
+col2 varchar
+col3 int
+col4 varchar
