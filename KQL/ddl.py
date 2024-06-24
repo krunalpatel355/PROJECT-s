@@ -14,6 +14,7 @@ def select_database():
         os.mkdir(DATABASE)
         return DATABASE
 
+# Operations:  extracts query and selecti dml or ddl operation
 class Operation:
 
     def __init__(self,query):
@@ -181,12 +182,61 @@ class Ddl_Operation():
             self.truncate_operation()
 
 class Dml_Operation():
+    def __init__(self,query,operation_index,database):
+        self.query = query
+        self.operation_index = operation_index
+        self.DATABASE = database
 
 
+    def extract_att(self):
+        att_name = []
+
+        for index, value in enumerate(self.query):
+
+            if self.query[index] == 'SELECT' or self.query[index] == 'select' or self.query[
+                index] == 'INSERT' or self.query[index] == 'insert' or self.query[index] == 'UPDATE' or \
+                    self.query[index] == 'update' or self.query[index] == 'DELETE' or self.query[index] == 'delete':
+                continue
+            elif self.query[index] == ',':
+                continue
+            elif self.query[index] == "FROM" or self.query[index] == "from":
+                break
+            else:
+                att_name.append(self.query[index])
+        return att_name
+
+
+    def select_operation(self):
+        pass
+
+    def insert_operation(table_name,attribute_names):
+        pass
+
+    def update_operation(table_name,attribute_names):
+        pass
+
+    def delete_operation(table_name,attribute_names):
+        pass
+
+
+
+    def perform_operation(self):
+        attribute_names = self.extract_att()
+        print(attribute_names)
+        if operation_index == 1:
+            select_operation()
+        elif operation_index == 2:
+            insert_operation()
+        elif operation_index == 3:
+            update_operation()
+        elif operation_index == 4:
+            delete_operation()
+
+ 
 
 DATABASE = select_database()
 
-txt = ""
+txt = "SELECT * FROM tbl_nm"
 query = txt.split()
 
 
@@ -202,6 +252,7 @@ if operation_type == 'ddl':
     ddl = Ddl_Operation(query,operation_index,DATABASE)
     ddl.perform_operation()
 elif operation_type == 'dml':
-    dml = Dml_Operation()
+    dml = Dml_Operation(query,operation_index,DATABASE)
+    dml.perform_operation()
 else:
     print("enter valid operation")
