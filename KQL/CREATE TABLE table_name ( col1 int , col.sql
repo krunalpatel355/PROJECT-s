@@ -6,3 +6,7 @@ ALTER TABLE old_table_name RENAME TO new_table_name;
 DROP TABLE table_name
 DROP TABLE table_name
 TRUNCATE TABLE table_name
+
+
+SELECT * FROM tbl_nm
+INSERT INTO table_name ( col1 , col2 , col3 ) VALUES ( 1 , 2 , 3 )

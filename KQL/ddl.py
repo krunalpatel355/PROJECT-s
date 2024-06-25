@@ -207,36 +207,108 @@ class Dml_Operation():
 
 
     def select_operation(self):
-        pass
+        
+        with open("","r") as file:
+            content = file.read()
 
-    def insert_operation(table_name,attribute_names):
-        pass
+        print(content)
 
-    def update_operation(table_name,attribute_names):
-        pass
+    def insert_operation(self):
+    
+        def inserting_data(insert_tbl_name,insert_tbl_data,query,database):
+            table_query = query
+            DATABASE = database
+            if insert_tbl_name != '*':
+                print(insert_tbl_name)
 
-    def delete_operation(table_name,attribute_names):
-        pass
+            table_name = str(DATABASE+'/'+table_query[2]+'.csv')           
+
+            def chunk_data(data, chunk_size):
+                chunk_size = len(chunk_size)
+                for i in range(0, len(data), chunk_size):
+                    yield data[i:i + chunk_size]
+
+            # Open the file in append mode
+            with open(table_name, 'a', newline='') as file:
+                writer = csv.writer(file)
+                # Split the data into chunks and write each chunk as a row
+                for chunk in chunk_data(insert_tbl_data, insert_tbl_name):
+                    print(chunk)
+                    writer.writerow(chunk)
+
+
+
+
+
+
+
+
+
+        table_name = self.query[3]
+        insert_tbl_name = []
+        insert_tbl_data = []
+        if self.query[3] == '(':
+            current_query = 0
+           
+            #there exist some table to be considered
+            for i in range(4,len(self.query)):
+                if self.query[i] == ')':
+                    current_query = i
+                    break
+                elif self.query[i] == ',':
+                    continue
+                else:
+                    insert_tbl_name.append(self.query[i])
+            next_query = current_query + 3 
+            
+            for i in range(next_query,len(self.query)):
+                if self.query[i] == ')':
+                    current_query = i
+                    break
+                elif self.query[i] == ',':
+                    continue
+                else:
+                    insert_tbl_data.append(self.query[i])
+
+            return_message = inserting_data(insert_tbl_name,insert_tbl_data,self.query,self.DATABASE)
+
+
+
+        elif self.query[3] == 'VALUES':
+            insert_tbl_name = ['*']
+            for i in range(5,len(self.query)):
+                if self.query[i] == ')':
+                    break
+                elif self.query[i] == ',':
+                    continue
+                else:
+                    insert_tbl_data.append(self.query[i])
+
+            return_message = inserting_data(insert_tbl_name,insert_tbl_data,self.query,self.DATABASE)
+
+        
+        
+
 
 
 
     def perform_operation(self):
         attribute_names = self.extract_att()
-        print(attribute_names)
-        if operation_index == 1:
-            select_operation()
-        elif operation_index == 2:
-            insert_operation()
-        elif operation_index == 3:
-            update_operation()
-        elif operation_index == 4:
-            delete_operation()
+        
+        if operation_index == 5:
+            self.select_operation()
+        elif operation_index == 6:
+            self.insert_operation()
+        elif operation_index == 7:
+            self.update_operation()
+        elif operation_index == 8:
+            self.delete_operation()
 
  
 
 DATABASE = select_database()
 
-txt = "SELECT * FROM tbl_nm"
+txt = "INSERT INTO table_name ( col1 , col2 , col3 ) VALUES ( 1 , 2 , 3 , 1 , 2 , 3 )"
 query = txt.split()
 
 
