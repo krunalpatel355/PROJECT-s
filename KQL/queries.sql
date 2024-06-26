@@ -3,6 +3,7 @@ CREATE TABLE table_name ( col1 int , col2 varchar , col3 int )
 INSERT INTO table_name ( col1 , col2 , col3 ) VALUES ( 1 , 2 , 3 , 1 , 2 , 3 )
 
 SELECT * FROM table_name
+SELECT col1 , col2 FROM table_name
 
 INSERT INTO table_name ( col2 , col3 ) VALUES ( 3 , 1 , 2 , 3 )
 UPDATE table_name SET col1 = 1 col2 = 2 WHERE col3 = 3

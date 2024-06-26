@@ -45,7 +45,6 @@ def handle_query():
 
     return render_template('index.html', databases=available_databases, headers=headers, rows=rows)
 
-
 @app.route('/get_databases', methods=['GET'])
 def get_databases():
     folders_to_skip = {'venv', '__pycache__', 'static', 'templates', 'database'}

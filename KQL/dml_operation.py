@@ -36,9 +36,10 @@ class DmlOperation:
             header = content[0]
             indices = [header.index(attr) for attr in extracted_attribute]
 
-            for row in content[1:]:
-                fetched_result = [row[index] for index in indices]
-        return fetched_result
+            for row in content[0:]:
+                cols = [row[index] for index in indices]
+                fetched_result.append(cols)
+        return fetched_result   
 
     def insert_operation(self):
         def inserting_data(insert_tbl_name, insert_tbl_data, query, database):
