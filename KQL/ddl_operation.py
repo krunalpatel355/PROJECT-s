@@ -20,7 +20,7 @@ class DdlOperation:
             writer = csv.writer(file)
             writer.writerow(result_dict.keys())
             writer.writerow(result_dict.values())
-        print("Table created successfully")
+        return "Table created successfully"
 
     def alter_operation(self):
         action = self.query[3]
@@ -40,7 +40,7 @@ class DdlOperation:
             with open(table_metadata_path, 'w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(content)
-            print("Column added successfully")
+            return "Column added successfully"
 
         elif action == 'MODIFY':
             nm = self.query[4]
@@ -56,7 +56,7 @@ class DdlOperation:
             with open(table_metadata_path, 'w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(content)
-            print("Column modified successfully")
+            return "Column modified successfully"
 
         elif action == 'RENAME' and self.query[4] == 'COLUMN':
             nm = self.query[5]
@@ -72,13 +72,13 @@ class DdlOperation:
             with open(table_metadata_path, 'w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(content)
-            print("Column renamed successfully")
+            return "Column renamed successfully"
 
         elif action == "RENAME" and self.query[4] == 'TO':
             nm2 = self.query[5]
             new_table_metadata_path = os.path.join(self.database, nm2 + '.csv')
             os.rename(table_metadata_path, new_table_metadata_path)
-            print("Table renamed successfully")
+            return "Table renamed successfully"
 
     def drop_operation(self):
         table_name = self.query[2]
@@ -86,29 +86,29 @@ class DdlOperation:
             table_metadata_path = os.path.join(self.database, table_name + '.csv')
             if os.path.exists(table_metadata_path):
                 os.remove(table_metadata_path)
-                print("Table dropped successfully")
+                return "Table dropped successfully"
             else:
-                print(f"Table {table_name} does not exist.")
+                return f"Table {table_name} does not exist."
         elif self.query[1].lower() == 'database':
             database_metadata_path = self.database
             if os.path.exists(database_metadata_path):
                 os.rmdir(database_metadata_path)
-                print("Database dropped successfully")
+                return "Database dropped successfully"
             else:
-                print(f"Database {self.database} does not exist.")
+                return f"Database {self.database} does not exist."
 
     def truncate_operation(self):
         table_name = os.path.join(self.database, self.query[2] + '.csv')
         with open(table_name, 'w') as file:
             file.write("")
-        print("Table truncated successfully")
+        return "Table truncated successfully"
 
     def perform_operation(self):
         if self.operation_index == 1:
-            self.create_operation()
+            return self.create_operation()
         elif self.operation_index == 2:
-            self.alter_operation()
+            return self.alter_operation()
         elif self.operation_index == 3:
-            self.drop_operation()
+            return self.drop_operation()
         elif self.operation_index == 4:
-            self.truncate_operation()
+            return self.truncate_operation()

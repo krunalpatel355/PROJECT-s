@@ -36,7 +36,7 @@ class DmlOperation:
 
             for row in content[1:]:
                 print([row[index] for index in indices])
-        print("Select operation completed successfully")
+        return "Select operation completed successfully"
 
     def insert_operation(self):
         def inserting_data(insert_tbl_name, insert_tbl_data, query, database):
@@ -50,7 +50,7 @@ class DmlOperation:
                 writer = csv.writer(file)
                 for chunk in chunk_data(insert_tbl_data, insert_tbl_name):
                     writer.writerow(chunk)
-            print("Data inserted successfully")
+            return "Data inserted successfully"
 
         table_name = self.query[3]
         insert_tbl_name = []
@@ -73,7 +73,7 @@ class DmlOperation:
                     continue
                 else:
                     insert_tbl_data.append(self.query[i])
-            inserting_data(insert_tbl_name, insert_tbl_data, self.query, self.database)
+            return inserting_data(insert_tbl_name, insert_tbl_data, self.query, self.database)
 
         elif self.query[3] == 'VALUES':
             insert_tbl_name = ['*']
@@ -84,30 +84,49 @@ class DmlOperation:
                     continue
                 else:
                     insert_tbl_data.append(self.query[i])
-            inserting_data(insert_tbl_name, insert_tbl_data, self.query, self.database)
+            return inserting_data(insert_tbl_name, insert_tbl_data, self.query, self.database)
 
     def update_operation(self):
+        # Extract the table name
         table_name = os.path.join(self.database, self.query[1] + '.csv')
-        column_to_update = self.query[3]
-        new_value = self.query[5]
-        condition_column = self.query[7]
-        condition_value = self.query[9]
+        
+        # Extract the SET clause and the WHERE clause
+        set_clause_start = self.query.index("SET") + 1
+        where_clause_start = self.query.index("WHERE")
+        
+        # Extract the columns and values to update
+        set_clause = " ".join(self.query[set_clause_start:where_clause_start])
+        updates = set_clause.split(",")
+        updates = [update.strip().split("=") for update in updates]
+        
+        # Extract the condition column and value
+        condition_clause = " ".join(self.query[where_clause_start + 1:])
+        condition_column, condition_value = condition_clause.split("=")
+        condition_column = condition_column.strip()
+        condition_value = condition_value.strip()
 
         with open(table_name, 'r') as file:
             content = list(csv.reader(file))
 
         header = content[0]
-        column_index = header.index(column_to_update)
         condition_index = header.index(condition_column)
 
+        # Create a dictionary of updates
+        updates_dict = {update[0].strip(): update[1].strip() for update in updates}
+
+        # Update the rows based on the condition
         for row in content[1:]:
-            if row[condition_index] == condition_value:
-                row[column_index] = new_value
+            if len(row) > condition_index and row[condition_index] == condition_value:
+                for column, new_value in updates_dict.items():
+                    column_index = header.index(column)
+                    if len(row) > column_index:
+                        row[column_index] = new_value
 
         with open(table_name, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(content)
-        print("Update operation completed successfully")
+        
+        return "Update operation completed successfully"
 
     def delete_operation(self):
         table_name = os.path.join(self.database, self.query[2] + '.csv')
@@ -120,19 +139,25 @@ class DmlOperation:
         header = content[0]
         condition_index = header.index(condition_column)
 
-        updated_content = [header] + [row for row in content[1:] if row[condition_index] != condition_value]
+        updated_content = [header]
+        for row in content[1:]:
+            if len(row) > condition_index and row[condition_index] != condition_value:
+                updated_content.append(row)
 
         with open(table_name, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(updated_content)
-        print("Delete operation completed successfully")
+        return "Delete operation completed successfully"
+
+
+
 
     def perform_operation(self):
         if self.operation_index == 5:
-            self.select_operation()
+            return self.select_operation()
         elif self.operation_index == 6:
-            self.insert_operation()
+            return self.insert_operation()
         elif self.operation_index == 7:
-            self.update_operation()
+            return self.update_operation()
         elif self.operation_index == 8:
-            self.delete_operation()
+            return self.delete_operation()
