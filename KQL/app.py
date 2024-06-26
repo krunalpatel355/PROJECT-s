@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from operation import Operation
 from ddl_operation import DdlOperation
@@ -9,13 +10,24 @@ app = Flask(__name__)
 # Example:
 @app.route('/')
 def index():
-    database = select_database()  # Implement your select_database function here
-    return render_template('index.html', database=database)
+    
+    folders_to_skip = {'venv','__pycache__','static','templates','database'}
+    available_databases = [d for d in os.listdir('.') if os.path.isdir(d) and d not in folders_to_skip]
+
+    return render_template('index.html', database=available_databases)
 
 # Implement routes and functions for handling various SQL operations
 # Example:
 @app.route('/query', methods=['POST'])
 def handle_query():
+    database = request.form['database']
+    folders_to_skip = {'venv','__pycache__','static','templates','database'}
+    available_databases = [d for d in os.listdir('.') if os.path.isdir(d) and d not in folders_to_skip]
+    if database in available_databases:
+        databse = database
+    else:
+        os.mkdir(database)
+        
     txt = request.form['query']
     query = txt.split()
 

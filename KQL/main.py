@@ -8,7 +8,7 @@ def select_database():
     available_databases = [d for d in os.listdir('.') if os.path.isdir(d) and d not in folders_to_skip]
     print("current databases:", available_databases)
 
-    database = input("select or create new database if not exist: ")
+
     if database in available_databases:
         return database
     else:

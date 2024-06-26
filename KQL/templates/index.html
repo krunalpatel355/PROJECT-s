@@ -1,0 +1,35 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    
+    <form action="{{ url_for('handle_query') }}" method="POST">
+        <h1>Database Operations</h1>
+
+        <label for="query">Enter your SQL query:</label><br>
+        <textarea id="query" name="query" rows="4" cols="50"></textarea><br>
+
+        <h1>select Database</h1>
+        <label for="query">Enter your database name:</label><br>
+        <textarea id="database" name="database" rows="1" cols="5"></textarea><br>
+        
+        
+        <h1>----------------------------- <h1>
+        <input type="submit" value="Submit">
+    </form>
+    <hr>
+
+
+    <h2>Current Databases:</h2>
+    <ul>
+        {% for db in database %}
+        <li>{{ db }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
