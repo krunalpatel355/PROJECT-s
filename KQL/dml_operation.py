@@ -25,18 +25,20 @@ class DmlOperation:
 
         with open(table_name, 'r') as file:
             content = list(csv.reader(file))
-
+        fetched_result=[]
         if self.query[1] == '*':
             for row in content:
                 print(row)
+                fetched_result.append(row)
         else:
+            
             extracted_attribute = self.extract_att()
             header = content[0]
             indices = [header.index(attr) for attr in extracted_attribute]
 
             for row in content[1:]:
-                print([row[index] for index in indices])
-        return "Select operation completed successfully"
+                fetched_result = [row[index] for index in indices]
+        return fetched_result
 
     def insert_operation(self):
         def inserting_data(insert_tbl_name, insert_tbl_data, query, database):

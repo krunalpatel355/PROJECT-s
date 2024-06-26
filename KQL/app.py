@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from operation import Operation
 from ddl_operation import DdlOperation
 from dml_operation import DmlOperation
@@ -35,9 +35,22 @@ def handle_query():
         response = dml.perform_operation()
     else:
         response = "Enter a valid operation"
-    
-    flash(response)
-    return redirect(url_for('index'))
+
+    # Convert response data into a structured format for HTML rendering
+    headers = response[0]
+    rows = response[1:]
+
+    # Flash message
+    flash("Query executed successfully.")
+
+    return render_template('index.html', databases=available_databases, headers=headers, rows=rows)
+
+
+@app.route('/get_databases', methods=['GET'])
+def get_databases():
+    folders_to_skip = {'venv', '__pycache__', 'static', 'templates', 'database'}
+    available_databases = [d for d in os.listdir('.') if os.path.isdir(d) and d not in folders_to_skip]
+    return jsonify(available_databases)
 
 if __name__ == '__main__':
     app.run(debug=True)
