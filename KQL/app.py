@@ -40,10 +40,16 @@ def handle_query():
     headers = response[0]
     rows = response[1:]
 
-    # Flash message
-    flash("Query executed successfully.")
 
-    return render_template('index.html', databases=available_databases, headers=headers, rows=rows)
+    # Flash message
+    flash("Query executed successfully")
+
+    if "successfully" in response:
+        return render_template('index.html', databases=available_databases, response=response)
+    else:
+        return render_template('index.html', databases=available_databases, headers=headers, rows=rows)
+
+
 
 @app.route('/get_databases', methods=['GET'])
 def get_databases():

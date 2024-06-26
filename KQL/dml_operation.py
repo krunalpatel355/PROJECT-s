@@ -21,6 +21,7 @@ class DmlOperation:
         return att_name
 
     def select_operation(self):
+        
         table_name = os.path.join(self.database, self.query[-1] + '.csv')
 
         with open(table_name, 'r') as file:
@@ -40,6 +41,7 @@ class DmlOperation:
                 cols = [row[index] for index in indices]
                 fetched_result.append(cols)
         return fetched_result   
+
 
     def insert_operation(self):
         def inserting_data(insert_tbl_name, insert_tbl_data, query, database):

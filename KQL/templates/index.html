@@ -37,26 +37,29 @@
     </script>
 </head>
 <body>
-    <form action="{{ url_for('handle_query') }}" method="POST">
-        <h1>Database Operations</h1>
 
-        <label for="query">Enter your SQL query:</label><br>
-        <textarea id="query" name="query" rows="4" cols="50"></textarea><br>
+        <form action="{{ url_for('handle_query') }}" method="POST">
+            <h1>Database Operations</h1>
 
-        <h1>Select Database</h1>
-        <label for="database">Enter your database name:</label><br>
-        <input type="text" id="database" name="database"><br> <!-- Change to input type text -->
+            <label for="query">Enter your SQL query:</label><br>
+            <textarea id="query" name="query" rows="4" cols="50"></textarea><br>
 
-        <input type="submit" value="Submit">
-    </form>
-    <hr>
+            <h1>Select Database</h1>
+            <label for="database">Enter your database name:</label><br>
+            <input type="text" id="database" name="database"><br> <!-- Change to input type text -->
 
+            <input type="submit" value="Submit">
+        </form>
+    
     <h2>Current Databases:</h2>
-    <ul id="databases-list">  <!-- Updated to use id for easier selection -->
-        {% for db in databases %}
-        <li>{{ db }}</li>
-        {% endfor %}
-    </ul>
+    <div style="display: flex;">
+
+        <ul id="databases-list">  <!-- Updated to use id for easier selection -->
+            {% for db in databases %}
+            <li>{{ db }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -70,21 +73,29 @@
 
     <!-- Display the table -->
     {% if headers and rows %}
-    <h2>Query Result:</h2>
-    <table border="1" style="display: block;">
-        <tr>
-            {% for header in headers %}
-            <th>{{ header }}</th>
+        
+        <!-- <h2>Query Result:</h2> -->
+        <table border="1" style="display: block; max-width: fit-content; margin: auto;">
+                
+            <tr>
+                {% for header in headers %}
+                <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+            {% for row in rows %}
+            <tr>
+                {% for item in row %}
+                <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
             {% endfor %}
-        </tr>
-        {% for row in rows %}
-        <tr>
-            {% for item in row %}
-            <td>{{ item }}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
+        </table>
+    {% endif %} 
+
+    <div>
+    {% if response %}
+        <center><h1>{{ response }}</h1></center>
     {% endif %}
+    </div>
 </body>
 </html>
