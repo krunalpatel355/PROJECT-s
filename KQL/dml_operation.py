@@ -20,27 +20,84 @@ class DmlOperation:
                 att_name.append(value)
         return att_name
 
+    def sum_column(self, data, index):
+        return sum(float(row[index]) for row in data if row[index].replace('.', '', 1).isdigit())
+
+    def avg_column(self, data, index):
+        valid_data = [float(row[index]) for row in data if row[index].replace('.', '', 1).isdigit()]
+        return sum(valid_data) / len(valid_data)
+
+    def count_column(self, data, index):
+        return len([row[index] for row in data if row[index]])
+
+    def apply_where_clause(self, data, header):
+        if "WHERE" in self.query:
+            where_index = self.query.index("WHERE")
+            condition = " ".join(self.query[where_index + 1:])
+            condition_column, condition_operator, condition_value = self.parse_condition(condition)
+            condition_index = header.index(condition_column)
+            if condition_operator == '=':
+                return [row for row in data if row[condition_index] == condition_value]
+            elif condition_operator == '!=':
+                return [row for row in data if row[condition_index] != condition_value]
+            elif condition_operator == '>':
+                return [row for row in data if float(row[condition_index]) > float(condition_value)]
+            elif condition_operator == '<':
+                return [row for row in data if float(row[condition_index]) < float(condition_value)]
+            elif condition_operator == '>=':
+                return [row for row in data if float(row[condition_index]) >= float(condition_value)]
+            elif condition_operator == '<=':
+                return [row for row in data if float(row[condition_index]) <= float(condition_value)]
+        return data
+
+    def parse_condition(self, condition):
+        for operator in ['=', '!=', '>', '<', '>=', '<=']:
+            if operator in condition:
+                column, value = condition.split(operator)
+                return column.strip(), operator, value.strip()
+        return None, None, None
+
+    def extract_table_name(self):
+        if "FROM" in self.query:
+            from_index = self.query.index("FROM")
+            table_name = self.query[from_index + 1]
+            return table_name
+        else:
+            raise ValueError("'FROM' clause is missing in the query")
+
+
     def select_operation(self):
-        
-        table_name = os.path.join(self.database, self.query[-1] + '.csv')
+        table_name = os.path.join(self.database, self.extract_table_name() + '.csv')
 
         with open(table_name, 'r') as file:
             content = list(csv.reader(file))
-        fetched_result=[]
-        if self.query[1] == '*':
-            for row in content:
-                print(row)
-                fetched_result.append(row)
-        else:
-            
-            extracted_attribute = self.extract_att()
-            header = content[0]
-            indices = [header.index(attr) for attr in extracted_attribute]
+        
+        header = content[0]
+        data = content[1:]
+        data = self.apply_where_clause(data, header)  # Apply WHERE clause filtering
 
-            for row in content[0:]:
-                cols = [row[index] for index in indices]
-                fetched_result.append(cols)
-        return fetched_result   
+        fetched_result = []
+
+        if self.query[1] == '*':
+            fetched_result = [header] + data
+        else:
+            extracted_attribute = self.extract_att()
+            indices = [header.index(attr.split('(')[-1].split(')')[0]) for attr in extracted_attribute]
+            agg_functions = [attr.split('(')[0].upper() if '(' in attr else None for attr in extracted_attribute]
+            
+            result_row = []
+            for i, func in enumerate(agg_functions):
+                if func == 'SUM':
+                    result_row.append(self.sum_column(data, indices[i]))
+                elif func == 'AVG':
+                    result_row.append(self.avg_column(data, indices[i]))
+                elif func == 'COUNT':
+                    result_row.append(self.count_column(data, indices[i]))
+                else:
+                    result_row.append([row[indices[i]] for row in data])
+            fetched_result.append(result_row)
+        
+        return [header] + fetched_result
 
 
     def insert_operation(self):

@@ -9,14 +9,14 @@ app.secret_key = 'supersecretkey'
 
 @app.route('/')
 def index():
-    folders_to_skip = {'venv', '__pycache__', 'static', 'templates', 'database'}
+    folders_to_skip = {'venv', '__pycache__', 'static', 'templates', 'database','.git'}
     available_databases = [d for d in os.listdir('.') if os.path.isdir(d) and d not in folders_to_skip]
     return render_template('index.html', databases=available_databases)
 
 @app.route('/query', methods=['POST'])
 def handle_query():
     database = request.form['database']
-    folders_to_skip = {'venv', '__pycache__', 'static', 'templates', 'database'}
+    folders_to_skip = {'venv', '__pycache__', 'static', 'templates', 'database','.git'}
     available_databases = [d for d in os.listdir('.') if os.path.isdir(d) and d not in folders_to_skip]
     
     if database not in available_databases:
